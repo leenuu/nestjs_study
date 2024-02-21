@@ -1,6 +1,6 @@
 export class RegistDto {
     readonly name: string;
-    readonly userId: String;
+    readonly userId: string;
     readonly email: string;
     readonly password: string;
 }
