@@ -1,39 +1,30 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { RegistDto } from "src/dto/user/regist-dto";
-import { UserRepository } from "./user.repository";
-import { User } from "./user.entity";
-import { LoginDto } from "src/dto/user/login-dto";
-import * as bcrypt from "bcrypt"
+import { Injectable } from "@nestjs/common";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "./entities/user.entity";
+import { Repository } from "typeorm";
+import { encryptionPassword } from "src/utill/bycrpt.utill";
 
 @Injectable()
 export class UserService {
-    constructor(private userRepo: UserRepository) { }
+    constructor(
+        @InjectRepository(User) private readonly repo: Repository<User>,
+    ) {}
 
-    async createUser(dto: RegistDto): Promise<void> {
-        const user = new User();
-        user.userId = dto.userId;
-        user.password = await this.encryptionPassword(dto.password);
-        user.email = dto.email;
-        user.name = dto.name;
-        user.enabled = true;
-                
-        await this.userRepo.saveUser(user);  
+    async createUser(dto: CreateUserDto) {
+        const password = await encryptionPassword(dto.password);
+        await this.repo.save({
+            userId: dto.userId,
+            password: password,
+            email: dto.email,
+            name: dto.name,
+            enabled: true,
+        });
     }
 
-    async findUser(dto: LoginDto): Promise<User> {
-        const user = await this.userRepo.findUser(dto.userId);
-        const validatePassword = await this.checkPassword(user, dto); 
-        if(!user || !validatePassword)
-            throw new UnauthorizedException();
-        
-        return user;
-    }
-
-    private async encryptionPassword(password: string): Promise<string> {
-        return await bcrypt.hash(password, 10);  
-    }
-
-    private async checkPassword(user: User, dto: LoginDto): Promise<boolean> {
-        return await bcrypt.compare(dto.password, user.password);
+    async findOneBy(userId: string): Promise<User> {
+        return this.repo.findOneBy({
+            userId: userId,
+        });
     }
 }
