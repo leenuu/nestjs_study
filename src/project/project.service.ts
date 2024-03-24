@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { Injectable } from "@nestjs/common";
+import { CreateProjectDto } from "./dto/create-project.dto";
+import { UpdateProjectDto } from "./dto/update-project.dto";
 
 @Injectable()
 export class ProjectService {
   create(createProjectDto: CreateProjectDto) {
-    return 'This action adds a new project';
+    return "This action adds a new project";
   }
 
   findAll() {

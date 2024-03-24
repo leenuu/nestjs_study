@@ -1,13 +1,15 @@
-import { Controller, Post, HttpStatus } from "@nestjs/common";
+import { Controller, Post, HttpStatus, UseGuards } from "@nestjs/common";
 import { ProjectService } from "./project.service";
 import { ResponseEntity } from "src/utill/response.utill";
+import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller("project")
 export class ProjectController {
-    constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) {}
 
-    @Post("test")
-    test() {
-        return ResponseEntity.create(HttpStatus.OK, "test complete", "");
-    }
+  @UseGuards(AuthGuard)
+  @Post("test")
+  test() {
+    return ResponseEntity.create(HttpStatus.OK, "test complete", "");
+  }
 }
